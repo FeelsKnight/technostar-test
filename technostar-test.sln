@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "technostar-test", "technostar-test.csproj", "{0BB27AD7-87F4-4675-B8BD-32D598E7CE10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "technostar-test", "technostar-test.csproj", "{0BB27AD7-87F4-4675-B8BD-32D598E7CE10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
