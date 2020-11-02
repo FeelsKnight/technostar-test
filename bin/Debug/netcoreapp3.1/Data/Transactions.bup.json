@@ -1,0 +1,86 @@
+[
+  {
+    "Id": 1,
+    "BuyerId": 4,
+    "SellerId": 3,
+    "DateTime": "2015-02-20T04:10:55.000+00:00",
+    "UsdAmount": 15.00
+  },
+  {
+    "Id": 2,
+    "BuyerId": 5,
+    "SellerId": 3,
+    "DateTime": "2015-11-07T05:00:33.000+00:00",
+    "UsdAmount": 10.00
+  },
+  {
+    "Id": 3,
+    "BuyerId": 3,
+    "SellerId": 8,
+    "DateTime": "2017-11-05T21:41:34.000+00:00",
+    "UsdAmount": 100.00
+  },
+  {
+    "Id": 4,
+    "BuyerId": 6,
+    "SellerId": 7,
+    "DateTime": "2018-10-22T08:49:49.000+00:00",
+    "UsdAmount": 300.00
+  },
+  {
+    "Id": 5,
+    "BuyerId": 4,
+    "SellerId": 3,
+    "DateTime": "2019-06-01T15:46:05.000+00:00",
+    "UsdAmount": 13.00
+  },
+  {
+    "Id": 6,
+    "BuyerId": 6,
+    "SellerId": 4,
+    "DateTime": "2019-06-26T02:28:15.000+00:00",
+    "UsdAmount": 1.00
+  },
+  {
+    "Id": 7,
+    "BuyerId": 8,
+    "SellerId": 7,
+    "DateTime": "2019-11-04T05:43:27.000+00:00",
+    "UsdAmount": 1300.00
+  },
+  {
+    "Id": 8,
+    "BuyerId": 2,
+    "SellerId": 7,
+    "DateTime": "2019-12-16T06:12:54.000+00:00",
+    "UsdAmount": 275.00
+  },
+  {
+    "Id": 9,
+    "BuyerId": 1,
+    "SellerId": 2,
+    "DateTime": "2020-01-13T22:56:02.000+00:00",
+    "UsdAmount": 120.00
+  },
+  {
+    "Id": 10,
+    "BuyerId": 3,
+    "SellerId": 2,
+    "DateTime": "2020-06-22T15:48:00.000+00:00",
+    "UsdAmount": 50.00
+  },
+  {
+    "Id": 11,
+    "BuyerId": 7,
+    "SellerId": 4,
+    "DateTime": "2020-08-11T21:29:20.000+00:00",
+    "UsdAmount": 220000.00
+  },
+  {
+    "Id": 12,
+    "BuyerId": 1,
+    "SellerId": 7,
+    "DateTime": "2020-10-31T18:24:44.000+00:00",
+    "UsdAmount": 3.50
+  }
+]

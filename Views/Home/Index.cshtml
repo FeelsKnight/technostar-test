@@ -1,0 +1,961 @@
+﻿@model technostar_test.Models.IndexViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+    string tableName;
+    string headerName;
+}
+
+<div class="container">
+    <div class="row p-1">
+        <div class="alert-info p-1 w-100 rounded">
+            <div class="toggleDescription btn-sm btn-outline-info">Toggle description</div>
+            <div class="description w-100 d-none-soft">
+                <p>Hey!</p>
+                <p>
+                    Thanks for taking the time to check out my test task. To be honest, I've had a blast toying around with it and sunk way more
+                    hours into it than I probably should have. :) Hopefully it has something to show for it, at least! Now, let's get to the point, shall we?
+                </p>
+                <p>This thing is built on:</p>
+                <ul>
+                    <li>ASP.NET Core 3.1</li>
+                    <li>jQuery 3.0.0</li>
+                    <li>Bootstrap 4.5.3</li>
+                    <li>Font Awesome 5</li>
+                    <li>Plain old HTML, CSS and JavaScript</li>
+                    <li>Just JSON for data storage</li>
+                </ul>
+                <p>What this thing can generally do:</p>
+                <ul>
+                    <li>Be nice and cool and nifty</li>
+                    <li>Look good in all configurations I've tested it in</li>
+                    <li>Satisfy the conditions presented in the task</li>
+                    <li>Hopefully impress you with my flawless skills and personality :P</li>
+                </ul>
+                <p>And its actual functionality includes:</p>
+                <ul>
+                    <li>Storing/retrieving data</li>
+                    <li>
+                        Highlighting related rows:
+                        <ul>
+                            <li>Tapping a Transaction row highlights it, the related product rows and the buyer in green and the seller in yellow (for gold, of course)</li>
+                            <li>
+                                Tapping a Product row highlights it, the related Transaction row, any other product rows related to that Transaction row,
+                                and the buyer in green and the seller in yellow
+                            </li>
+                            <li>
+                                Tapping a Person row highlights it, all the Person rows this Person has made transactions with, the buying
+                                (from the perspective of the person) Transaction rows in green, the selling Transaction rows in yellow, and Product rows the same color
+                                as their related Transaction row
+                            </li>
+                            <li>Tapping any row makes text bold, marking it as highlight base, meaning all current highlights are related to this row</li>
+                        </ul>
+                    </li>
+                    <li>
+                        Manipulating data:
+                        <ul>
+                            <li>All hover actions are equivalent to touch actions on mobile</li>
+                            <li>
+                                Hovering over table name brings up a plus button, which when clicked takes you down to the bottom of the table and presents you with a form
+                                to create a new row in that table
+                            </li>
+                            <li>
+                                Hovering over a table header brings up a sort button, which when clicked sorts the table by corresponding values in ascending order.
+                                When clicked again, sorts in descending order
+                            </li>
+                            <li>Hovering over a row's rightmost cell brings up a delete button, which when clicked removes the row</li>
+                            <li>Hovering over a row's leftmost cell brings up an edit button, which when clicked makes this row's values editable</li>
+                            <li>Any changes made in the UI are sent to the controller and stored in the "database"</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p>Personally, this thing feels really fun to just fiddle around with. Hope you enjoy it as much as I do. :)</p>
+                <p>
+                    I also hope it actually works well as a test task, and shows my enthusiasm as well as skills related to the job. Don't tell anyone, but I'm
+                    really looking forward to getting this job!
+                </p>
+                <p>Actually, if you could put in a word for me, I'd owe you one. ;)</p>
+                <p>Just kidding. Again, thank you so much for your time reviewing this, and I really do hope I did well. Hope to see you at the interview!</p>
+            </div>
+        </div>
+    </div>
+    <div class="row p-1">
+        @{ tableName = "Transactions"; }
+        <table class="table table-striped table-bordered border-success table-hover shadow-sm col m-1 transactions">
+            <thead class="thead-dark text-nowrap">
+                <tr>
+                    <th colspan="5">
+                        <span>@tableName</span>
+                        <button class="addNewRow hoverable btn btn-primary" title="Add transaction">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </th>
+                </tr>
+                <tr>
+                    @{ headerName = "Id"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName.ToLower() by @headerName.ToLower(). One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                    @{ headerName = "Buyer id"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName.ToLower() by @headerName.ToLower(). One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                    @{ headerName = "Seller id"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName.ToLower() by @headerName.ToLower(). One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                    @{ headerName = "Date & time"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName by @headerName. One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                    @{ headerName = "Amount, $"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName by @headerName. One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Transactions != null && Model.Transactions.Any())
+                {
+                    foreach (var transaction in Model.Transactions)
+                    {
+                        <tr>
+                            <td class="position-relative">
+                                <span class="id">@transaction.Id</span>
+                                <button class="editRow hoverable btn btn-primary" title="Edit this row"><i class="fas fa-edit"></i></button>
+                            </td>
+                            <td>
+                                <span class="buyerId">@transaction.BuyerId</span>
+                            </td>
+                            <td>
+                                <span class="sellerId">@transaction.SellerId</span>
+                            </td>
+                            <td>
+                                <span class="dateTime">@transaction.DateTime.ToString("g")</span>
+                            </td>
+                            <td class="position-relative">
+                                <span class="usdAmount">@transaction.UsdAmount</span>
+                                <button class="removeRow hoverable btn btn-danger" title="Delete this row"><i class="far fa-times-circle"></i></button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+            <tfoot>
+                <tr class="newRowForm d-none-soft">
+                    <td class="p-0">
+                        <button class="cancelForm btn btn-danger w-100 p-0 rounded-0" title="Cancel"><i class="far fa-times-circle"></i></button>
+                        <button class="submitForm btn btn-success w-100 p-0 rounded-0" title="Submit"><i class="far fa-check-circle"></i></button>
+                    </td>
+                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Buyer id" /></td>
+                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Seller id" /></td>
+                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Date & time" /></td>
+                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Amount, $" /></td>
+                </tr>
+            </tfoot>
+        </table>
+        @{ tableName = "Products"; }
+        <table class="table table-striped table-bordered table-hover shadow-sm col m-1 products">
+            <thead class="thead-dark text-nowrap">
+                <tr>
+                    <th colspan="4">
+                        <span>@tableName</span>
+                        <button class="addNewRow hoverable btn btn-primary" title="Add product">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </th>
+                </tr>
+                <tr>
+                    @{ headerName = "Id"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName by @headerName. One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                    @{ headerName = "Transaction id"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName by @headerName. One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                    @{ headerName = "Type"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName by @headerName. One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                    @{ headerName = "Model"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName by @headerName. One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Products != null && Model.Products.Any())
+                {
+                    foreach (var product in Model.Products)
+                    {
+                        <tr>
+                            <td class="position-relative">
+                                <span class="id">@product.Id</span>
+                                <button class="editRow hoverable btn btn-primary" title="Edit this row"><i class="fas fa-edit"></i></button>
+                            </td>
+                            <td>
+                                <span class="transactionId">@product.TransactionId</span>
+                            </td>
+                            <td>
+                                <span class="type">@product.Type</span>
+                            </td>
+                            <td class="position-relative">
+                                <span class="model">@product.Model</span>
+                                <button class="removeRow hoverable btn btn-danger" title="Delete this row"><i class="far fa-times-circle"></i></button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+            <tfoot>
+                <tr class="newRowForm d-none-soft">
+                    <td class="p-0">
+                        <button class="cancelForm btn btn-danger w-100 p-0 rounded-0" title="Cancel"><i class="far fa-times-circle"></i></button>
+                        <button class="submitForm btn btn-success w-100 p-0 rounded-0" title="Submit"><i class="far fa-check-circle"></i></button>
+                    </td>
+                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Transaction id" /></td>
+                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Type" /></td>
+                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Model" /></td>
+                </tr>
+            </tfoot>
+        </table>
+        @{ tableName = "Persons"; }
+        <table class="table table-striped table-bordered table-hover shadow-sm col flex-shrink-1 m-1 persons">
+            <thead class="thead-dark text-nowrap">
+                <tr>
+                    <th colspan="3">
+                        <span>@tableName</span>
+                        <button class="addNewRow hoverable btn btn-primary" title="Add person">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </th>
+                </tr>
+                <tr>
+                    @{ headerName = "Id"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName by @headerName. One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                    @{ headerName = "Name"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName by @headerName. One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                    @{ headerName = "Birthday"; }
+                    <th>
+                        <span>@headerName</span>
+                        <button class="sort hoverable btn btn-primary"
+                                title="Sort @tableName by @headerName. One click: ascending. Two clicks: descending">
+                            <i class="fas fa-sort-alpha-down"></i>
+                        </button>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Persons != null && Model.Persons.Any())
+                {
+                    foreach (var person in Model.Persons)
+                    {
+                        <tr>
+                            <td class="position-relative">
+                                <span class="id">@person.Id</span>
+                                <button class="editRow hoverable btn btn-primary" title="Edit this row"><i class="fas fa-edit"></i></button>
+                            </td>
+                            <td>
+                                <span class="name">@person.Name</span>
+                            </td>
+                            <td class="position-relative">
+                                <span class="birthday">@person.Birthday.ToShortDateString()</span>
+                                <button class="removeRow hoverable btn btn-danger" title="Delete this row"><i class="far fa-times-circle"></i></button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+            <tfoot>
+                <tr class="newRowForm d-none-soft">
+                    <td class="p-0">
+                        <button class="cancelForm btn btn-danger w-100 p-0 rounded-0" title="Cancel"><i class="far fa-times-circle"></i></button>
+                        <button class="submitForm btn btn-success w-100 p-0 rounded-0" title="Submit"><i class="far fa-check-circle"></i></button>
+                    </td>
+                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Name" /></td>
+                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Birthday" /></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<script>
+    jQuery(document).ready(function () {
+        // utility function for later on
+        let getAndTrimHtmlOfChildElement = function (object, childElementSelector) {
+            return $.trim($(object).find(childElementSelector).html());
+        }
+        // generally useful selector
+        let dataTablesSelector = "table.transactions, table.products, table.persons";
+
+
+
+        $(".toggleDescription").on("click", function () {
+            $(".description").slideToggle("slow");
+        });
+
+
+
+        // transforms row to allow editing
+        $(dataTablesSelector).on("click", ".editRow", function () {
+            let row = $(this).closest("tr");
+            let tds = row.find("td");
+            tds.children().addClass("d-none");
+            tds.addClass("p-0");
+            tds.eq(0).append(`<button class="cancelEdit btn btn-danger w-100 p-0 rounded-0"><i class="far fa-times-circle"></i></button>
+                              <button class="submitEdit btn btn-success w-100 p-0 rounded-0"><i class="far fa-check-circle"></i></button>`);
+            tds.not(":eq(0)").each(function () {
+                let thisValue = getAndTrimHtmlOfChildElement(this, "span");
+                $(this).append(`<input class="w-100 h-100 border-0" value="${thisValue}" />`);
+            });
+        });
+
+        $(dataTablesSelector).on("click", ".cancelEdit", function () {
+            let row = $(this).closest("tr");
+            let tds = row.find("td");
+            row.find(".cancelEdit, .submitEdit, input").remove();
+            tds.removeClass("p-0");
+            tds.find(".d-none").removeClass("d-none");
+        });
+
+        $(dataTablesSelector).on("click", ".submitEdit", function () {
+            let row = $(this).closest("tr");
+            let id = getAndTrimHtmlOfChildElement(row, ".id");
+            let inputs = row.find("td input");
+            if (row.closest("table").hasClass("transactions")) {
+                // reads all the inputs
+                let buyerId = $.trim(inputs.eq(0).val());
+                let sellerId = $.trim(inputs.eq(1).val());
+                let dateTime = $.trim(inputs.eq(2).val());
+                let usdAmount = $.trim(inputs.eq(3).val());
+                // this should have extra checks for types etc.
+                // if any input is not filled out
+                if (!buyerId || !sellerId || !dateTime || !usdAmount) {
+                    alert("Something's not right with the submitted data.");
+                } else {
+                    $.post("@Url.Action("EditTransaction", "IO")",
+                        // constructs a Transaction object
+                        {
+                            Id: id,
+                            BuyerId: buyerId,
+                            SellerId: sellerId,
+                            DateTime: dateTime,
+                            UsdAmount: usdAmount
+                        }, function (result) {
+                            if (result === 0) {
+                                row.find(".buyerId").html(buyerId);
+                                row.find(".sellerId").html(sellerId);
+                                row.find(".dateTime").html(dateTime);
+                                row.find(".usdAmount").html(usdAmount);
+                            } else {
+                                alert("Something went wrong when uploading the submitted data.");
+                            }
+                            row.find(".cancelEdit").trigger("click");
+                        });
+                }
+            } else if (row.closest("table").hasClass("products")) {
+                // reads all the inputs
+                let transactionId = $.trim(inputs.eq(0).val());
+                let type = $.trim(inputs.eq(1).val());
+                let model = $.trim(inputs.eq(2).val());
+                // this should have extra checks for types etc.
+                // if any of the required inputs is not filled out
+                if (!transactionId || !type) {
+                    alert("Something's not right with the submitted data.");
+                } else {
+                    $.post("@Url.Action("EditProduct", "IO")",
+                        // constructs a Product object
+                        {
+                            Id: id,
+                            TransactionId: transactionId,
+                            Type: type,
+                            Model: model
+                        }, function (result) {
+                            if (result === 0) {
+                                row.find(".transactionId").html(transactionId);
+                                row.find(".type").html(type);
+                                row.find(".model").html(model);
+                            } else {
+                                alert("Something went wrong when uploading the submitted data.");
+                            }
+                            row.find(".cancelEdit").trigger("click");
+                        });
+                }
+            } else if (row.closest("table").hasClass("persons")) {
+                // reads all the inputs
+                let name = $.trim(inputs.eq(0).val());
+                let birthday = $.trim(inputs.eq(1).val());
+                // this should have extra checks for types etc.
+                // if any of the inputs is not filled out
+                if (!name || !birthday) {
+                    alert("Something's not right with the submitted data.");
+                } else {
+                    $.post("@Url.Action("EditPerson", "IO")",
+                        // constructs a Person object
+                        {
+                            Id: id,
+                            Name: name,
+                            Birthday: birthday
+                        }, function (result) {
+                            if (result === 0) {
+                                row.find(".name").html(name);
+                                row.find(".birthday").html(birthday);
+                            } else {
+                                alert("Something went wrong when uploading the submitted data.");
+                            }
+                            row.find(".cancelEdit").trigger("click");
+                        });
+                }
+            }
+        });
+
+
+
+        // removes row - quite expectedly
+        $(dataTablesSelector).on("click", ".removeRow", function () {
+            // extracts the id
+            let row = $(this).closest("tr");
+            let id = getAndTrimHtmlOfChildElement(row, ".id");
+            // chooses controller action based on parent table
+            let table = row.closest("table");
+            let actionUrl = table.hasClass("transactions") ? "@Url.Action("RemoveTransaction", "IO")" :
+                            table.hasClass("products") ? "@Url.Action("RemoveProduct", "IO")" :
+                            table.hasClass("persons") ? "@Url.Action("RemovePerson", "IO")" : "";
+            $.post(actionUrl,
+                { id: id }, function (result) {
+                    if (result === 0) {
+                        row.fadeOut("fast", function () { row.remove(); });
+                    }
+                });
+        });
+
+
+
+        // adds rows to data tables
+        // no input formatting in these or in the backend, hope it's not necessary for a task like this :P
+        // also creating elements with copy-paste html here is pretty awful, could be made better with cloning
+        let addTransaction = function (id, buyerId, sellerId, dateTime, usdAmount) {
+            let tbody = $("table.transactions tbody");
+            let row = $(`<tr>
+                            <td class="position-relative">
+                                <span class="id">${id}</span>
+                                <button class="editRow hoverable btn btn-primary"><i class="fas fa-edit"></i></button>
+                            </td>
+                            <td>
+                                <span class="buyerId">${buyerId}</span>
+                            </td>
+                            <td>
+                                <span class="sellerId">${sellerId}</span>
+                            </td>
+                            <td>
+                                <span class="dateTime">${dateTime}</span>
+                            </td>
+                            <td class="position-relative">
+                                <span class="usdAmount">${usdAmount}</span>
+                                <button class="removeRow hoverable btn btn-danger"><i class="far fa-times-circle"></i></button>
+                            </td>
+                        </tr>`);
+            tbody.append(row);
+            row.fadeIn("fast");
+        };
+
+        let addProduct = function (id, transactionId, type, model) {
+            let tbody = $("table.products tbody");
+            let row = $(`<tr>
+                            <td class="position-relative">
+                                <span class="id">${id}</span>
+                                <button class="editRow hoverable btn btn-primary"><i class="fas fa-edit"></i></button>
+                            </td>
+                            <td>
+                                <span class="transactionId">${transactionId}</span>
+                            </td>
+                            <td>
+                                <span class="type">${type}</span>
+                            </td>
+                            <td class="position-relative">
+                                <span class="model">${model}</span>
+                                <button class="removeRow hoverable btn btn-danger"><i class="far fa-times-circle"></i></button>
+                            </td>
+                        </tr>`);
+            tbody.append(row);
+            row.fadeIn("fast");
+        };
+
+        let addPerson = function (id, name, birthday) {
+            let tbody = $("table.persons tbody");
+            let row = $(`<tr>
+                            <td class="position-relative">
+                                <span class="id">${id}</span>
+                                <button class="editRow hoverable btn btn-primary"><i class="fas fa-edit"></i></button>
+                            </td>
+                            <td>
+                                <span class="name">${name}</span>
+                            </td>
+                            <td class="position-relative">
+                                <span class="birthday">${birthday}</span>
+                                <button class="removeRow hoverable btn btn-danger"><i class="far fa-times-circle"></i></button>
+                            </td>
+                        </tr>`);
+            tbody.append(row);
+            row.fadeIn("fast");
+        };
+
+        // opens up new row form
+        $(dataTablesSelector).on("click", ".addNewRow", function () {
+            let form = $(this).closest("table").find(".newRowForm");
+            // scrolls to form and shows it
+            $([document.documentElement, document.body]).animate({
+                scrollTop: $(this).closest("table").find("tbody tr").last().offset().top - $(window).height() / 2
+            }, 500, function () {
+                form.fadeIn("fast");
+            });
+        });
+
+        // cancels new row form
+        $(dataTablesSelector).on("click", ".cancelForm", function () {
+            let row = $(this).closest("tr");
+            // hides the form and clears the inputs
+            row.fadeOut("fast", function () { row.find("input").val(""); });
+        });
+
+        // submits new row form
+        $(dataTablesSelector).on("click", ".submitForm", function () {
+            let row = $(this).closest("tr");
+            let inputs = row.find("td input");
+            if (row.closest("table").hasClass("transactions")) {
+                // reads all the inputs
+                let buyerId = $.trim(inputs.eq(0).val());
+                let sellerId = $.trim(inputs.eq(1).val());
+                let dateTime = $.trim(inputs.eq(2).val());
+                let usdAmount = $.trim(inputs.eq(3).val());
+                // this should have extra checks for types etc.
+                // if any input is not filled out
+                if (!buyerId || !sellerId || !dateTime || !usdAmount) {
+                    alert("Something's not right with the submitted data.");
+                } else {
+                    $.post("@Url.Action("AddTransaction", "IO")",
+                        // constructs a Transaction object
+                        {
+                            Id: 0,
+                            BuyerId: buyerId,
+                            SellerId: sellerId,
+                            DateTime: dateTime,
+                            UsdAmount: usdAmount
+                        }, function (id) {
+                            row.find(".cancelForm").trigger("click");
+                            addTransaction(id, buyerId, sellerId, dateTime, usdAmount);
+                        });
+                }
+            } else if (row.closest("table").hasClass("products")) {
+                // reads all the inputs
+                let transactionId = $.trim(inputs.eq(0).val());
+                let type = $.trim(inputs.eq(1).val());
+                let model = $.trim(inputs.eq(2).val());
+                // this should have extra checks for types etc.
+                // if any of the required inputs is not filled out
+                if (!transactionId || !type) {
+                    alert("Something's not right with the submitted data.");
+                } else {
+                    $.post("@Url.Action("AddProduct", "IO")",
+                        // constructs a Product object
+                        {
+                            Id: 0,
+                            TransactionId: transactionId,
+                            Type: type,
+                            Model: model
+                        }, function (id) {
+                            row.find(".cancelForm").trigger("click");
+                            addProduct(id, transactionId, type, model);
+                        });
+                }
+            } else if (row.closest("table").hasClass("persons")) {
+                // reads all the inputs
+                let name = $.trim(inputs.eq(0).val());
+                let birthday = $.trim(inputs.eq(1).val());
+                // this should have extra checks for types etc.
+                // if any of the inputs is not filled out
+                if (!name || !birthday) {
+                    alert("Something's not right with the submitted data.");
+                } else {
+                    $.post("@Url.Action("AddPerson", "IO")",
+                        // constructs a Person object
+                        {
+                            Id: 0,
+                            Name: name,
+                            Birthday: birthday
+                        }, function (id) {
+                            row.find(".cancelForm").trigger("click");
+                            addPerson(id, name, birthday);
+                        });
+                }
+            }
+        });
+
+
+
+        // shows hoverable buttons when hovering over a header
+        $(dataTablesSelector)
+            .find("thead, tbody")
+            .on("mouseenter", "th, td", function () {
+                $(this).find(".hoverable").fadeIn("fast");
+            })
+            .on("mouseleave", "th, td", function () {
+                $(this).find(".hoverable").fadeOut("fast");
+            });
+
+        // sorts elements in ascending/descending order based on
+        // whether the corresponding column contains strings,
+        // numbers or dates
+        let sortClickHandler = function () {
+            let th = $(this).closest("th");
+            // .index() is 0-indexed
+            // + 1 to later use it with nth-child, which is 1-indexed
+            let i = th.index() + 1;
+            let tbody = $(this).closest("table").find("tbody");
+            let trsToSort = tbody.find("tr");
+            // gets name of header to determine what type of data will be sorted
+            let headerName = getAndTrimHtmlOfChildElement(th, "span").toLowerCase();
+            // manage .descending marker on .sort buttons
+            let ascending = !$(this).hasClass("descending");
+            $(this).closest("table").find("thead .sort.descending").not(this).removeClass("descending");
+            $(this).toggleClass("descending");
+            // after writing this sorting function, I realized that it should really be optimized
+            // to be a choice of functions based on the conditions. currently, it checks the
+            // conditions every iteration. not great, not terrible - you can't really
+            // notice it with the test data's size, so I'm not going to bother. let's just say
+            // I can do it if I need to, so I hope that's good enough :)
+            trsToSort
+                .sort(function (a, b) {
+                    let aValue = getAndTrimHtmlOfChildElement(a, `td:nth-child(${i}) span`);
+                    let bValue = getAndTrimHtmlOfChildElement(b, `td:nth-child(${i}) span`);
+                    // if header name denotes an id column, parses values as integers
+                    if (headerName.includes("id")) {
+                        aValue = parseInt(aValue);
+                        bValue = parseInt(bValue);
+                    }
+                    // if header name denotes an amount column, parses values as floats
+                    else if (headerName.includes("amount")) {
+                        aValue = parseFloat(aValue);
+                        bValue = parseFloat(bValue);
+                    }
+                    // if header name denotes a date column, parses values as dates
+                    else if (headerName.includes("date") || headerName === "birthday") {
+                        // stripping time here since time doesn't come into play in test data
+                        let aIndexOfSpace = aValue.indexOf(" ");
+                        if (aIndexOfSpace > -1) aValue = aValue.slice(0, aIndexOfSpace + 1);
+                        let aParts = aValue.split(".");
+                        aValue = new Date(aParts[2], aParts[1] - 1, aParts[0]).valueOf();
+                        let bIndexOfSpace = bValue.indexOf(" ");
+                        if (bIndexOfSpace > -1) bValue = bValue.slice(0, bIndexOfSpace + 1);
+                        let bParts = bValue.split(".");
+                        bValue = new Date(bParts[2], bParts[1] - 1, bParts[0]).valueOf();
+                    }
+                    // returns values according to .sort() function
+                    return (aValue < bValue ? -1 : // -1 to put a first
+                            aValue > bValue ? 1 :   // 1 to put b first
+                            0)                      // 0 to not change order
+                            * (ascending ? 1 : -1); // also multiplies the result by -1 for descending order
+                })
+                .appendTo(tbody);
+        };
+        $(dataTablesSelector)
+            .on("click", ".sort", sortClickHandler);
+
+
+        // support functions for highlighting selected and relevant rows
+
+        // finds relevant rows in other tables based on ids and returns them
+        // takes a jquery object containing a row, returns a jquery object containing relevant rows
+        //
+        // the three following functions are only different in the specifics of finding
+        // relevant rows starting from a transaction, product or person row
+
+        // relevant rows starting from transaction row
+        let findRelevantRowsByTransactionRow = function (row) {
+            // extract ids while trimming them
+            let transactionId = getAndTrimHtmlOfChildElement(row, ".id");
+            let buyerId = getAndTrimHtmlOfChildElement(row, ".buyerId");
+            let sellerId = getAndTrimHtmlOfChildElement(row, ".sellerId");
+            // gets product rows where transaction id matches the required transaction id
+            let productRows = $("table.products tbody tr").filter(function () {
+                let productTransactionId = getAndTrimHtmlOfChildElement(this, ".transactionId");
+                return productTransactionId === transactionId;
+            });
+            // gets person rows where id matches the required buyer or seller id
+            let personRows = $("table.persons tbody tr").filter(function () {
+                let personId = getAndTrimHtmlOfChildElement(this, ".id");
+                return personId === buyerId || personId === sellerId;
+            });
+            // returns all found rows
+            return productRows.add(personRows);
+        };
+
+        // relevant rows starting from product row
+        let findRelevantRowsByProductRow = function (row) {
+            // extract transaction id while trimming it
+            let transactionId = getAndTrimHtmlOfChildElement(row, ".transactionId");
+            // gets transaction row where id matches the required transaction id
+            let transactionRow = $("table.transactions tbody tr").filter(function () {
+                let transactionRowTransactionId = getAndTrimHtmlOfChildElement(this, ".id");
+                return transactionRowTransactionId === transactionId;
+            });
+            // gets rows relevant to found transaction row
+            let relevantRows = findRelevantRowsByTransactionRow(transactionRow);
+            // returns all found rows
+            return transactionRow.add(relevantRows);
+        };
+
+        // relevant rows starting from person row
+        let findRelevantRowsByPersonRow = function (row) {
+            // extract id while trimming it
+            let personId = getAndTrimHtmlOfChildElement(row, ".id");
+            // gets transaction rows where buyer or seller id matches required id
+            let transactionRows = $("table.transactions tbody tr").filter(function () {
+                let buyerId = getAndTrimHtmlOfChildElement(this, ".buyerId");
+                let sellerId = getAndTrimHtmlOfChildElement(this, ".sellerId");
+                return personId === buyerId || personId === sellerId;
+            });
+            // extract transaction ids from the found transaction rows while trimming them
+            let transactionIds = transactionRows
+                .map(function () {
+                    return getAndTrimHtmlOfChildElement(this, ".id");
+                })
+                .toArray();
+            // extracts buyer and seller ids
+            let buyerIds = transactionRows
+                .map(function () {
+                    return getAndTrimHtmlOfChildElement(this, ".buyerId");
+                })
+                .toArray();
+            let sellerIds = transactionRows
+                .map(function () {
+                    return getAndTrimHtmlOfChildElement(this, ".sellerId");
+                })
+                .toArray();
+            // there could be duplicates in the resulting array
+            // and there will also be the selected person's id in array,
+            // but it doesn't matter if it's a buyer or a seller,
+            // and the selected person's row will be highlighted anyway,
+            // so it doesn't matter for this kind of behavior
+            let buyerAndSellerIds = buyerIds.concat(sellerIds);
+            // gets buyer and seller rows
+            let buyerAndSellerRows = $("table.persons tbody tr").filter(function () {
+                let buyerOrSellerId = getAndTrimHtmlOfChildElement(this, ".id");
+                return $.inArray(buyerOrSellerId, buyerAndSellerIds) > -1;
+            });
+            // gets product rows where transaction id matches one of the required ids
+            let productRows = $("table.products tbody tr").filter(function () {
+                let productTransactionId = getAndTrimHtmlOfChildElement(this, ".transactionId");
+                return transactionIds.includes(productTransactionId);
+            });
+            return transactionRows.add(productRows).add(buyerAndSellerRows);
+        };
+
+        // finds a buyer row and a seller row from a jquery object containing rows
+        // takes a jquery object containing rows, a buyer id and a seller id
+        // returns an array containing a buyer row first and a seller row second
+        let findBuyerAndSellerInRows = function (rows, buyerId, sellerId) {
+            // gets person row where buyer id matches the required id
+            let buyerRow = $(rows).filter(function () {
+                let closestTableIsPersons = $(this).closest("table.persons").length > 0;
+                let personId = getAndTrimHtmlOfChildElement(this, ".id");
+                return closestTableIsPersons && personId === buyerId;
+            });
+            // gets person row where seller id matches the required id
+            let sellerRow = $(rows).filter(function () {
+                let closestTableIsPersons = $(this).closest("table.persons").length > 0;
+                let personId = getAndTrimHtmlOfChildElement(this, ".id");
+                return closestTableIsPersons && personId === sellerId;
+            });
+            return [buyerRow, sellerRow];
+        };
+
+        // finds buying and selling transaction and product rows
+        // takes a jquery object containing rows and a person's id
+        // returns an array containing two jquery objects
+        // first jquery object contains buying transactions and products
+        // second jquery object contains selling transactions and products
+        let findBuyingAndSellingTransactionAndProductInRows = function (rows, personId) {
+            // gets buying transaction rows
+            let buyingTransactionRows = rows.filter(function () {
+                let buyerId = getAndTrimHtmlOfChildElement(this, ".buyerId");
+                return buyerId === personId;
+            });
+            // gets selling transaction rows
+            let sellingTransactionRows = rows.filter(function () {
+                let sellerId = getAndTrimHtmlOfChildElement(this, ".sellerId");
+                return sellerId === personId;
+            });
+            // extracts buying transaction ids
+            let buyingTransactionIds = buyingTransactionRows
+                .map(function () {
+                    return getAndTrimHtmlOfChildElement(this, ".id");
+                })
+                .toArray();
+            // extracts selling transaction ids
+            let sellingTransactionIds = sellingTransactionRows
+                .map(function () {
+                    return getAndTrimHtmlOfChildElement(this, ".id");
+                })
+                .toArray();
+            // gets buying product rows
+            let buyingProductRows = rows.filter(function () {
+                let transactionId = getAndTrimHtmlOfChildElement(this, ".transactionId");
+                return $.inArray(transactionId, buyingTransactionIds) > -1;
+            });
+            // gets selling product rows
+            let sellingProductRows = rows.filter(function () {
+                let transactionId = getAndTrimHtmlOfChildElement(this, ".transactionId");
+                return $.inArray(transactionId, sellingTransactionIds) > -1;
+            });
+            // merges buying rows in one object and selling rows in one object
+            let buyingTransactionAndProductRows = buyingTransactionRows.add(buyingProductRows);
+            let sellingTransactionAndProductRows = sellingTransactionRows.add(sellingProductRows);
+            return [buyingTransactionAndProductRows, sellingTransactionAndProductRows];
+        };
+
+        // highlights relevant rows in other tables when hovering over a row based on ids
+        // transaction rows
+        let highlightRowsBasedOnTransactionRow = function (row) {
+            let relevantRows = findRelevantRowsByTransactionRow(row);
+            // extracts buyer id and seller id from transaction row
+            let buyerId = $.trim($(row).find(".buyerId").html());
+            let sellerId = $.trim($(row).find(".sellerId").html());
+            // finds buyer and seller rows to highlight them differently
+            let buyerAndSellerRows = findBuyerAndSellerInRows(relevantRows, buyerId, sellerId);
+            let buyerRow = buyerAndSellerRows[0];
+            let sellerRow = buyerAndSellerRows[1];
+            // highlight rows
+            $(row).add(relevantRows).not(buyerRow).not(sellerRow).addClass("bg-info");
+            buyerRow.addClass("bg-success");
+            sellerRow.addClass("bg-warning");
+            $(row).addClass("highlight-base");
+        };
+
+        // product rows
+        let highlightRowsBasedOnProductRow = function (row) {
+            let relevantRows = findRelevantRowsByProductRow(row);
+            // extracts buyer id and seller id from the transaction row, which has been fetched in relevant rows
+            let buyerId = getAndTrimHtmlOfChildElement(relevantRows, ".buyerId");
+            let sellerId = getAndTrimHtmlOfChildElement(relevantRows, ".sellerId");
+            // finds buyer and seller rows to highlight them differently
+            let buyerAndSellerRows = findBuyerAndSellerInRows(relevantRows, buyerId, sellerId);
+            let buyerRow = buyerAndSellerRows[0];
+            let sellerRow = buyerAndSellerRows[1];
+            // highlight rows
+            $(row).add(relevantRows).not(buyerRow).not(sellerRow).addClass("bg-info");
+            buyerRow.addClass("bg-success");
+            sellerRow.addClass("bg-warning");
+            $(row).addClass("highlight-base");
+        };
+
+        // person rows
+        let highlightRowsBasedOnPersonRow = function (row) {
+            let relevantRows = findRelevantRowsByPersonRow(row);
+            let personId = getAndTrimHtmlOfChildElement(row, ".id");
+            // separates transaction and product rows into buying rows and selling rows
+            let buyingAndSellingTransactionAndProductRows = findBuyingAndSellingTransactionAndProductInRows(relevantRows, personId);
+            let buyingRows = buyingAndSellingTransactionAndProductRows[0];
+            let sellingRows = buyingAndSellingTransactionAndProductRows[1];
+            // highlights rows
+            $(row).add(relevantRows).not(buyingRows).not(sellingRows).addClass("bg-info");
+            buyingRows.addClass("bg-warning");
+            sellingRows.addClass("bg-success");
+            $(row).addClass("highlight-base");
+        };
+
+        // unhighlights all rows in all data tables highlighted by any color
+        // also wipes the highlight-base marker
+        let unhighlightAllRows = function () {
+            $(dataTablesSelector)
+                .find("tbody")
+                .find(".bg-info, .bg-warning, .bg-success, .highlight-base")
+                .removeClass("bg-info bg-warning bg-success highlight-base");
+        };
+
+        $(document).on("click", function (e) {
+            let etarget = $(e.target);
+            // unhighlights when anything except:
+            // thead
+            // tbody button, tbody input
+            // tfoot
+            // is clicked
+            let needToUnhighlight =
+                !(etarget.closest(dataTablesSelector).length > 0
+                && (etarget.closest("thead").length > 0
+                || etarget.closest("tbody button").length > 0
+                || etarget.closest("tbody input").length > 0
+                || etarget.closest("tfoot").length > 0));
+            // need to highlight if clicking a data table row
+            // that currently is not a highlight base.
+            // this way, clicking a highlight base row will unhighlight
+            let needToHighlight =
+                etarget.closest(dataTablesSelector).length > 0
+                && etarget.closest("tbody").length > 0
+                && !etarget.closest("tbody button").length > 0
+                && !etarget.closest("tbody input").length > 0
+                && !etarget.closest("tr").is(".highlight-base");
+            if (needToUnhighlight) {
+                unhighlightAllRows();
+            }
+            if (needToHighlight) {
+                // chooses the correct highlight function depending on the position of the row
+                let highlightFunction =
+                    etarget.closest("table").hasClass("transactions") ? highlightRowsBasedOnTransactionRow :
+                    etarget.closest("table").hasClass("products") > 0 ? highlightRowsBasedOnProductRow :
+                    etarget.closest("table").hasClass("persons") > 0 ? highlightRowsBasedOnPersonRow : null;
+                highlightFunction(etarget.closest("tr"));
+            }
+        });
+    });
+</script>

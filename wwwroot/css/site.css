@@ -1,0 +1,68 @@
+﻿a.navbar-brand {
+    background-image: url("../img/logo.png");
+    background-size: contain;
+    height: 2rem;
+    width: 2rem;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+    font-size: 10px;
+}
+@media (min-width: 425px) {
+    html {
+        font-size: 12px;
+    }
+}
+@media (min-width: 576px) {
+    html {
+      font-size: 14px;
+    }
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+    padding-top: 60px;
+    margin-bottom: 60px;
+}
+
+.hoverable {
+    position: absolute;
+    height: 1.5rem;
+    width: 1.5rem;
+    padding: 0;
+    box-sizing: border-box;
+    top: 0.3rem;
+    right: 0.3rem;
+    display: none;
+}
+
+.highlight-base {
+    font-weight: bold;
+}
+
+table.transactions th, table.products th, table.persons th {
+    position: relative;
+}
+
+table.transactions input, table.products input, table.persons input {
+    padding: 0.75rem;
+}
+
+.d-none-soft {
+    display: none;
+}
+
+.navbar.fixed-bottom {
+    position: initial;
+}
+@media (min-width: 768px) {
+    .navbar.fixed-bottom {
+        position: fixed;
+    }
+}
