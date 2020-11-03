@@ -1,7 +1,7 @@
 ﻿@model technostar_test.Models.IndexViewModel
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "technostar-test";
     string tableName;
     string headerName;
 }
@@ -11,6 +11,26 @@
         <div class="alert-info p-1 w-100 rounded">
             <div class="toggleDescription btn-sm btn-outline-info">Toggle description</div>
             <div class="description w-100 d-none-soft">
+                <p>UPD:</p>
+                <ol>
+                    <li>
+                        Migrated from JSON to MS SQL + Entity Framework. Also provided some Transact SQL queries for things done in EF
+                        to demonstrate a bit of TSQL, just in case EF isn't exactly valid for this task. DB generation & population script is in Data folder.
+                    </li>
+                    <li>
+                        Changed some design implementations for crossbrowser compatibility. Changed a whole lot of JS to work with IE.
+                        Now, everything works on everything I checked, including Android. Only thing I didn't check on is iOS.
+                    </li>
+                    <li>
+                        Cleaned up the repo.
+                    </li>
+                    <li>
+                        Added data validation on editing/submitting rows. Changed id inputs to selects, only showing the available ids.
+                        The ids available in selects change as table contents change.
+                    </li>
+                </ol>
+                <p>Looks pretty good now, overall. :)</p>
+                <hr />
                 <p>Hey!</p>
                 <p>
                     Thanks for taking the time to check out my test task. To be honest, I've had a blast toying around with it and sunk way more
@@ -48,7 +68,7 @@
                                 (from the perspective of the person) Transaction rows in green, the selling Transaction rows in yellow, and Product rows the same color
                                 as their related Transaction row
                             </li>
-                            <li>Tapping any row makes text bold, marking it as highlight base, meaning all current highlights are related to this row</li>
+                            <li>Tapping any row underlines its text, marking it as highlight base, meaning all current highlights are related to this row</li>
                         </ul>
                     </li>
                     <li>
@@ -79,9 +99,9 @@
             </div>
         </div>
     </div>
-    <div class="row p-1">
+    <div class="row">
         @{ tableName = "Transactions"; }
-        <table class="table table-striped table-bordered border-success table-hover shadow-sm col m-1 transactions">
+        <table class="table table-striped table-bordered border-success table-hover shadow-sm col-12 transactions">
             <thead class="thead-dark text-nowrap">
                 <tr>
                     <th colspan="5">
@@ -167,15 +187,37 @@
                         <button class="cancelForm btn btn-danger w-100 p-0 rounded-0" title="Cancel"><i class="far fa-times-circle"></i></button>
                         <button class="submitForm btn btn-success w-100 p-0 rounded-0" title="Submit"><i class="far fa-check-circle"></i></button>
                     </td>
-                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Buyer id" /></td>
-                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Seller id" /></td>
+                    <td class="p-0">
+                        <select class="custom-select w-100 h-100 border-0 rounded-0 personIdSelect">
+                            <option selected disabled>Buyer id</option>
+                            @if (Model.Persons != null && Model.Persons.Any())
+                            {
+                                @foreach (var person in Model.Persons)
+                                {
+                                    <option value="@person.Id">@person.Id</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td class="p-0">
+                        <select class="custom-select w-100 h-100 border-0 rounded-0 personIdSelect">
+                            <option selected disabled>Seller id</option>
+                            @if (Model.Persons != null && Model.Persons.Any())
+                            {
+                                @foreach (var person in Model.Persons)
+                                {
+                                    <option value="@person.Id">@person.Id</option>
+                                }
+                            }
+                        </select>
+                    </td>
                     <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Date & time" /></td>
                     <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Amount, $" /></td>
                 </tr>
             </tfoot>
         </table>
         @{ tableName = "Products"; }
-        <table class="table table-striped table-bordered table-hover shadow-sm col m-1 products">
+        <table class="table table-striped table-bordered table-hover shadow-sm col-12 products">
             <thead class="thead-dark text-nowrap">
                 <tr>
                     <th colspan="4">
@@ -250,14 +292,25 @@
                         <button class="cancelForm btn btn-danger w-100 p-0 rounded-0" title="Cancel"><i class="far fa-times-circle"></i></button>
                         <button class="submitForm btn btn-success w-100 p-0 rounded-0" title="Submit"><i class="far fa-check-circle"></i></button>
                     </td>
-                    <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Transaction id" /></td>
+                    <td class="p-0">
+                        <select class="custom-select w-100 h-100 border-0 rounded-0 transactionIdSelect">
+                            <option selected disabled>Transaction id</option>
+                            @if (Model.Transactions != null && Model.Transactions.Any())
+                            {
+                                @foreach (var transaction in Model.Transactions)
+                                {
+                                    <option value="@transaction.Id">@transaction.Id</option>
+                                }
+                            }
+                        </select>
+                    </td>
                     <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Type" /></td>
                     <td class="p-0"><input class="w-100 h-100 border-0" placeholder="Model" /></td>
                 </tr>
             </tfoot>
         </table>
         @{ tableName = "Persons"; }
-        <table class="table table-striped table-bordered table-hover shadow-sm col flex-shrink-1 m-1 persons">
+        <table class="table table-striped table-bordered table-hover shadow-sm flex-shrink-1 col-12 persons">
             <thead class="thead-dark text-nowrap">
                 <tr>
                     <th colspan="3">
@@ -335,11 +388,21 @@
         let getAndTrimHtmlOfChildElement = function (object, childElementSelector) {
             return $.trim($(object).find(childElementSelector).html());
         }
+
         // generally useful selector
         let dataTablesSelector = "table.transactions, table.products, table.persons";
 
+        // regexes for editing and creating rows
+        let birthdayRegex = /\d{1,2}.\d{1,2}.\d{4}/;
+        let dateTimeRegex = /\d{1,2}.\d{1,2}.\d{4} \d{1,2}:\d{2}/;
+        let usdAmountRegex = /\d{1,19}[\,\.]?\d{0,4}/;
+
+        // keeps track of all available ids
+        let availableTransactionIds = [ @String.Join(",", Model.Transactions.Select(t => t.Id)) ];
+        let availablePersonIds = [ @String.Join(",", Model.Persons.Select(t => t.Id)) ];
 
 
+        // toggles description visibility
         $(".toggleDescription").on("click", function () {
             $(".description").slideToggle("slow");
         });
@@ -350,20 +413,51 @@
         $(dataTablesSelector).on("click", ".editRow", function () {
             let row = $(this).closest("tr");
             let tds = row.find("td");
+            // hiding all existing content in row
             tds.children().addClass("d-none");
             tds.addClass("p-0");
-            tds.eq(0).append(`<button class="cancelEdit btn btn-danger w-100 p-0 rounded-0"><i class="far fa-times-circle"></i></button>
-                              <button class="submitEdit btn btn-success w-100 p-0 rounded-0"><i class="far fa-check-circle"></i></button>`);
+            tds.eq(0).append('<button class="cancelEdit btn btn-danger w-100 p-0 rounded-0"><i class="far fa-times-circle"></i></button>' +
+                              '<button class="submitEdit btn btn-success w-100 p-0 rounded-0"><i class="far fa-check-circle"></i></button>');
+            let tableName =
+                row.closest("table").hasClass("transactions") ? "transactions" :
+                row.closest("table").hasClass("products") ? "products" : "";
             tds.not(":eq(0)").each(function () {
-                let thisValue = getAndTrimHtmlOfChildElement(this, "span");
-                $(this).append(`<input class="w-100 h-100 border-0" value="${thisValue}" />`);
+                let i = tds.index(this);
+                // if iterating over a transaction's buyer id or seller id field, add a select instead of an input
+                if (tableName === "transactions" && (i === 1 || i === 2)) {
+                    let select = $("<select class='custom-select w-100 h-100 border-0 rounded-0 personIdSelect'>");
+                    let title = i === 1 ? "Buyer id" : "Seller id";
+                    let personId =
+                        i === 1 ?
+                            Number(getAndTrimHtmlOfChildElement(row, ".buyerId")) :
+                            Number(getAndTrimHtmlOfChildElement(row, ".sellerId"));
+                    select.append('<option selected disabled>' + title + '</option>');
+                    for (let i = 0; i < availablePersonIds.length; i++) {
+                        let id = availablePersonIds[i];
+                        select.append('<option value=' + id + (personId === id ? " selected" : "") + '>' + id + '</option>');
+                    }
+                    $(this).append(select);
+                // if iterating over a product's transaction id field, add a select instead of an input
+                } else if (tableName === "products" && i === 1) {
+                    let transactionId = Number(getAndTrimHtmlOfChildElement(row, ".transactionId"));
+                    let select = $("<select class='custom-select w-100 h-100 border-0 rounded-0 transactionId'>");
+                    // pre-select the current id
+                    for (let i = 0; i < availableTransactionIds.length; i++) {
+                        let id = availableTransactionIds[i];
+                        select.append('<option value=' + id + (transactionId === id ? " selected" : "") + '>' + id + '</option>');
+                    }
+                    $(this).append(select);
+                } else {
+                    let thisValue = getAndTrimHtmlOfChildElement(this, "span");
+                    $(this).append('<input class="w-100 h-100 border-0" value="' + thisValue + '" />');
+                }
             });
         });
 
         $(dataTablesSelector).on("click", ".cancelEdit", function () {
             let row = $(this).closest("tr");
             let tds = row.find("td");
-            row.find(".cancelEdit, .submitEdit, input").remove();
+            row.find(".cancelEdit, .submitEdit, input, select").remove();
             tds.removeClass("p-0");
             tds.find(".d-none").removeClass("d-none");
         });
@@ -371,19 +465,42 @@
         $(dataTablesSelector).on("click", ".submitEdit", function () {
             let row = $(this).closest("tr");
             let id = getAndTrimHtmlOfChildElement(row, ".id");
+            let selects = row.find("td select");
             let inputs = row.find("td input");
             if (row.closest("table").hasClass("transactions")) {
                 // reads all the inputs
-                let buyerId = $.trim(inputs.eq(0).val());
-                let sellerId = $.trim(inputs.eq(1).val());
-                let dateTime = $.trim(inputs.eq(2).val());
-                let usdAmount = $.trim(inputs.eq(3).val());
-                // this should have extra checks for types etc.
+                let buyerId = $.trim(selects.eq(0).val());
+                let sellerId = $.trim(selects.eq(1).val());
+                let dateTime = $.trim(inputs.eq(0).val());
+                let usdAmount = $.trim(inputs.eq(1).val());
+                if (dateTime) {
+                    if (dateTime.match(dateTimeRegex)) {
+                        let dateParts = dateTime.slice(0, dateTime.indexOf(" ")).split(".");
+                        // if day is less than 0 or more than 31
+                        if (dateParts[0] < 0 || dateParts[0] > 31) {
+                            alert("Invalid day of the month.");
+                            return;
+                            // if month is less than 0 or more than 31
+                        } else if (dateParts[1] < 1 || dateParts[1] > 12) {
+                            alert("Invalid month.");
+                            return;
+                        }
+                        // if date & time does not match format
+                    } else {
+                        alert("Date & time does not match dd.mm.yyyy hh:ss format.");
+                        return;
+                    }
+                }
                 // if any input is not filled out
                 if (!buyerId || !sellerId || !dateTime || !usdAmount) {
-                    alert("Something's not right with the submitted data.");
+                    alert("Not all required values were provided.");
+                    return;
+                // if amount is too large, too precise, negative, or does not match format
+                } else if (!usdAmount.match(usdAmountRegex)) {
+                    alert("Amount, $ is too large, too precise, negative, or does not match 0,0/0.0 format.");
+                    return;
                 } else {
-                    $.post("@Url.Action("EditTransaction", "IO")",
+                    $.post("@Url.Action("EditTransaction", "Home")",
                         // constructs a Transaction object
                         {
                             Id: id,
@@ -405,15 +522,15 @@
                 }
             } else if (row.closest("table").hasClass("products")) {
                 // reads all the inputs
-                let transactionId = $.trim(inputs.eq(0).val());
-                let type = $.trim(inputs.eq(1).val());
-                let model = $.trim(inputs.eq(2).val());
-                // this should have extra checks for types etc.
+                let transactionId = $.trim(selects.eq(0).val());
+                let type = $.trim(inputs.eq(0).val());
+                let model = $.trim(inputs.eq(1).val());
                 // if any of the required inputs is not filled out
                 if (!transactionId || !type) {
-                    alert("Something's not right with the submitted data.");
+                    alert("Not all required values were provided.");
+                    return;
                 } else {
-                    $.post("@Url.Action("EditProduct", "IO")",
+                    $.post("@Url.Action("EditProduct", "Home")",
                         // constructs a Product object
                         {
                             Id: id,
@@ -435,12 +552,30 @@
                 // reads all the inputs
                 let name = $.trim(inputs.eq(0).val());
                 let birthday = $.trim(inputs.eq(1).val());
-                // this should have extra checks for types etc.
+                if (birthday) {
+                    if (birthday.match(birthdayRegex)) {
+                        let dateParts = birthday.split(".");
+                        // if day is less than 0 or more than 31
+                        if (dateParts[0] < 0 || dateParts[0] > 31) {
+                            alert("Invalid day of the month.");
+                            return;
+                            // if month is less than 0 or more than 31
+                        } else if (dateParts[1] < 1 || dateParts[1] > 12) {
+                            alert("Invalid month.");
+                            return;
+                        }
+                        // if birthday does not match format
+                    } else {
+                        alert("Birthday does not match dd.mm.yyyy hh:ss format.");
+                        return;
+                    }
+                }
                 // if any of the inputs is not filled out
                 if (!name || !birthday) {
-                    alert("Something's not right with the submitted data.");
+                    alert("Not all required values were provided.");
+                    return;
                 } else {
-                    $.post("@Url.Action("EditPerson", "IO")",
+                    $.post("@Url.Action("EditPerson", "Home")",
                         // constructs a Person object
                         {
                             Id: id,
@@ -466,15 +601,28 @@
             // extracts the id
             let row = $(this).closest("tr");
             let id = getAndTrimHtmlOfChildElement(row, ".id");
-            // chooses controller action based on parent table
             let table = row.closest("table");
-            let actionUrl = table.hasClass("transactions") ? "@Url.Action("RemoveTransaction", "IO")" :
-                            table.hasClass("products") ? "@Url.Action("RemoveProduct", "IO")" :
-                            table.hasClass("persons") ? "@Url.Action("RemovePerson", "IO")" : "";
-            $.post(actionUrl,
-                { id: id }, function (result) {
+            let type = table.hasClass("transactions") ? "transactions" :
+                       table.hasClass("products") ? "products" :
+                       table.hasClass("persons") ? "persons" : "";
+            // chooses controller action based on parent table
+            let actionUrl = type === "transactions" ? "@Url.Action("RemoveTransaction", "Home")" :
+                            type === "products" ? "@Url.Action("RemoveProduct", "Home")" :
+                            type === "persons" ? "@Url.Action("RemovePerson", "Home")" : "";
+            $.post(
+                actionUrl,
+                { id: id },
+                function (result) {
                     if (result === 0) {
                         row.fadeOut("fast", function () { row.remove(); });
+                        // if removing a transaction or a person, removes their id from the pool of available ids
+                        if (type === "transactions") {
+                            availableTransactionIds = availableTransactionIds.filter(function (a) { return a != id; });
+                            $(".transactionIdSelect option[value=" + id + "]").remove();
+                        } else if (type === "persons") {
+                            availablePersonIds = availablePersonIds.filter(function (a) { return a != id; });
+                            $(".personIdSelect option[value=" + id + "]").remove();
+                        }
                     }
                 });
         });
@@ -482,70 +630,69 @@
 
 
         // adds rows to data tables
-        // no input formatting in these or in the backend, hope it's not necessary for a task like this :P
-        // also creating elements with copy-paste html here is pretty awful, could be made better with cloning
+        // creating elements with copy-paste html here is pretty awful, could be made better with cloning
         let addTransaction = function (id, buyerId, sellerId, dateTime, usdAmount) {
             let tbody = $("table.transactions tbody");
-            let row = $(`<tr>
-                            <td class="position-relative">
-                                <span class="id">${id}</span>
-                                <button class="editRow hoverable btn btn-primary"><i class="fas fa-edit"></i></button>
-                            </td>
-                            <td>
-                                <span class="buyerId">${buyerId}</span>
-                            </td>
-                            <td>
-                                <span class="sellerId">${sellerId}</span>
-                            </td>
-                            <td>
-                                <span class="dateTime">${dateTime}</span>
-                            </td>
-                            <td class="position-relative">
-                                <span class="usdAmount">${usdAmount}</span>
-                                <button class="removeRow hoverable btn btn-danger"><i class="far fa-times-circle"></i></button>
-                            </td>
-                        </tr>`);
+            let row = $('<tr>' +
+                        '    <td class="position-relative">' +
+                        '        <span class="id">' + id + '</span>' +
+                        '        <button class="editRow hoverable btn btn-primary"><i class="fas fa-edit"></i></button>' +
+                        '    </td>' +
+                        '    <td>' +
+                        '        <span class="buyerId">' + buyerId + '</span>' +
+                        '    </td>' +
+                        '    <td>' +
+                        '        <span class="sellerId">' + sellerId + '</span>' +
+                        '    </td>' +
+                        '    <td>' +
+                        '        <span class="dateTime">' + dateTime + '</span>' +
+                        '    </td>' +
+                        '    <td class="position-relative">' +
+                        '        <span class="usdAmount">' + usdAmount + '</span>' +
+                        '        <button class="removeRow hoverable btn btn-danger"><i class="far fa-times-circle"></i></button>' +
+                        '    </td>' +
+                        '</tr>');
             tbody.append(row);
             row.fadeIn("fast");
         };
 
         let addProduct = function (id, transactionId, type, model) {
             let tbody = $("table.products tbody");
-            let row = $(`<tr>
-                            <td class="position-relative">
-                                <span class="id">${id}</span>
-                                <button class="editRow hoverable btn btn-primary"><i class="fas fa-edit"></i></button>
-                            </td>
-                            <td>
-                                <span class="transactionId">${transactionId}</span>
-                            </td>
-                            <td>
-                                <span class="type">${type}</span>
-                            </td>
-                            <td class="position-relative">
-                                <span class="model">${model}</span>
-                                <button class="removeRow hoverable btn btn-danger"><i class="far fa-times-circle"></i></button>
-                            </td>
-                        </tr>`);
+            let row = $('<tr>' +
+                        '    <td class="position-relative">' +
+                        '        <span class="id">' + id + '</span>' +
+                        '        <button class="editRow hoverable btn btn-primary"><i class="fas fa-edit"></i></button>' +
+                        '    </td>' +
+                        '    <td>' +
+                        '        <span class="transactionId">' + transactionId + '</span>' +
+                        '    </td>' +
+                        '    <td>' +
+                        '        <span class="type">' + type + '</span>' +
+                        '    </td>' +
+                        '    <td class="position-relative">' +
+                        '        <span class="model">' + model + '</span>' +
+                        '        <button class="removeRow hoverable btn btn-danger"><i class="far fa-times-circle"></i></button>' +
+                        '    </td>' +
+                        '</tr>');
             tbody.append(row);
             row.fadeIn("fast");
         };
 
         let addPerson = function (id, name, birthday) {
             let tbody = $("table.persons tbody");
-            let row = $(`<tr>
-                            <td class="position-relative">
-                                <span class="id">${id}</span>
-                                <button class="editRow hoverable btn btn-primary"><i class="fas fa-edit"></i></button>
-                            </td>
-                            <td>
-                                <span class="name">${name}</span>
-                            </td>
-                            <td class="position-relative">
-                                <span class="birthday">${birthday}</span>
-                                <button class="removeRow hoverable btn btn-danger"><i class="far fa-times-circle"></i></button>
-                            </td>
-                        </tr>`);
+            let row = $('<tr>' +
+                        '    <td class="position-relative">' +
+                        '        <span class="id">' + id + '</span>' +
+                        '        <button class="editRow hoverable btn btn-primary"><i class="fas fa-edit"></i></button>' +
+                        '    </td>' +
+                        '    <td>' +
+                        '        <span class="name">' + name + '</span>' +
+                        '    </td>' +
+                        '    <td class="position-relative">' +
+                        '        <span class="birthday">' + birthday + '</span>' +
+                        '        <button class="removeRow hoverable btn btn-danger"><i class="far fa-times-circle"></i></button>' +
+                        '    </td>' +
+                        '</tr>');
             tbody.append(row);
             row.fadeIn("fast");
         };
@@ -571,19 +718,43 @@
         // submits new row form
         $(dataTablesSelector).on("click", ".submitForm", function () {
             let row = $(this).closest("tr");
+            let selects = row.find("td select");
             let inputs = row.find("td input");
             if (row.closest("table").hasClass("transactions")) {
                 // reads all the inputs
-                let buyerId = $.trim(inputs.eq(0).val());
-                let sellerId = $.trim(inputs.eq(1).val());
-                let dateTime = $.trim(inputs.eq(2).val());
-                let usdAmount = $.trim(inputs.eq(3).val());
-                // this should have extra checks for types etc.
+                let buyerId = $.trim(selects.eq(0).val());
+                let sellerId = $.trim(selects.eq(1).val());
+                let dateTime = $.trim(inputs.eq(0).val());
+                let usdAmount = $.trim(inputs.eq(1).val());
+                if (dateTime) {
+                    if (dateTime.match(dateTimeRegex)) {
+                        let dateParts = dateTime.slice(0, dateTime.indexOf(" ")).split(".");
+                        // if day is less than 0 or more than 31
+                        if (dateParts[0] < 0 || dateParts[0] > 31) {
+                            alert("Invalid day of the month.");
+                            return;
+                            // if month is less than 0 or more than 31
+                        } else if (dateParts[1] < 1 || dateParts[1] > 12) {
+                            alert("Invalid month.");
+                            return;
+                        }
+                    // if date & time does not match format
+                    } else {
+                        alert("Date & time does not match dd.mm.yyyy hh:ss format.");
+                        return;
+                    }
+                }
                 // if any input is not filled out
                 if (!buyerId || !sellerId || !dateTime || !usdAmount) {
-                    alert("Something's not right with the submitted data.");
+                    alert("Not all required values were provided.");
+                    return;
+                }
+                // if amount is too large, too precise, negative, or does not match format
+                else if (!usdAmount.match(usdAmountRegex)) {
+                    alert("Amount, $ is too large, too precise, negative, or does not match 0,0/0.0 format.");
+                    return;
                 } else {
-                    $.post("@Url.Action("AddTransaction", "IO")",
+                    $.post("@Url.Action("AddTransaction", "Home")",
                         // constructs a Transaction object
                         {
                             Id: 0,
@@ -592,21 +763,28 @@
                             DateTime: dateTime,
                             UsdAmount: usdAmount
                         }, function (id) {
-                            row.find(".cancelForm").trigger("click");
-                            addTransaction(id, buyerId, sellerId, dateTime, usdAmount);
+                            if (id != 0) {
+                                row.find(".cancelForm").trigger("click");
+                                addTransaction(id, buyerId, sellerId, dateTime, usdAmount);
+                                availableTransactionIds.push(id);
+                                $(".transactionIdSelect").append($('<option value=' + id + '>' + id + '</option>'));
+                            } else {
+                                alert("Something went wrong when uploading the submitted data.");
+                            }
                         });
                 }
-            } else if (row.closest("table").hasClass("products")) {
+            }
+            else if (row.closest("table").hasClass("products")) {
                 // reads all the inputs
-                let transactionId = $.trim(inputs.eq(0).val());
-                let type = $.trim(inputs.eq(1).val());
-                let model = $.trim(inputs.eq(2).val());
-                // this should have extra checks for types etc.
+                let transactionId = $.trim(selects.eq(0).val());
+                let type = $.trim(inputs.eq(0).val());
+                let model = $.trim(inputs.eq(1).val());
                 // if any of the required inputs is not filled out
                 if (!transactionId || !type) {
-                    alert("Something's not right with the submitted data.");
+                    alert("Not all required values were provided.");
+                    return;
                 } else {
-                    $.post("@Url.Action("AddProduct", "IO")",
+                    $.post("@Url.Action("AddProduct", "Home")",
                         // constructs a Product object
                         {
                             Id: 0,
@@ -614,28 +792,56 @@
                             Type: type,
                             Model: model
                         }, function (id) {
-                            row.find(".cancelForm").trigger("click");
-                            addProduct(id, transactionId, type, model);
+                            if (id != 0) {
+                                row.find(".cancelForm").trigger("click");
+                                addProduct(id, transactionId, type, model);
+                            } else {
+                                alert("Something went wrong when uploading the submitted data.");
+                            }
                         });
                 }
-            } else if (row.closest("table").hasClass("persons")) {
+            }
+            else if (row.closest("table").hasClass("persons")) {
                 // reads all the inputs
                 let name = $.trim(inputs.eq(0).val());
                 let birthday = $.trim(inputs.eq(1).val());
-                // this should have extra checks for types etc.
+                if (birthday) {
+                    if (birthday.match(birthdayRegex)) {
+                        let dateParts = birthday.split(".");
+                        // if day is less than 0 or more than 31
+                        if (dateParts[0] < 0 || dateParts[0] > 31) {
+                            alert("Invalid day of the month.");
+                            return;
+                            // if month is less than 0 or more than 31
+                        } else if (dateParts[1] < 1 || dateParts[1] > 12) {
+                            alert("Invalid month.");
+                            return;
+                        }
+                        // if birthday does not match format
+                    } else {
+                        alert("Birthday does not match dd.mm.yyyy hh:ss format.");
+                        return;
+                    }
+                }
                 // if any of the inputs is not filled out
                 if (!name || !birthday) {
-                    alert("Something's not right with the submitted data.");
+                    alert("Not all required values were provided.");
                 } else {
-                    $.post("@Url.Action("AddPerson", "IO")",
+                    $.post("@Url.Action("AddPerson", "Home")",
                         // constructs a Person object
                         {
                             Id: 0,
                             Name: name,
                             Birthday: birthday
                         }, function (id) {
-                            row.find(".cancelForm").trigger("click");
-                            addPerson(id, name, birthday);
+                            if (id != 0) {
+                                row.find(".cancelForm").trigger("click");
+                                addPerson(id, name, birthday);
+                                availablePersonIds.push(id);
+                                $(".personIdSelect").append($('<option value=' + id + '>' + id + '</option>'));
+                            } else {
+                                alert("Something went wrong when uploading the submitted data.");
+                            }
                         });
                 }
             }
@@ -676,20 +882,20 @@
             // I can do it if I need to, so I hope that's good enough :)
             trsToSort
                 .sort(function (a, b) {
-                    let aValue = getAndTrimHtmlOfChildElement(a, `td:nth-child(${i}) span`);
-                    let bValue = getAndTrimHtmlOfChildElement(b, `td:nth-child(${i}) span`);
+                    let aValue = getAndTrimHtmlOfChildElement(a, 'td:nth-child(' + i + ') span');
+                    let bValue = getAndTrimHtmlOfChildElement(b, 'td:nth-child(' + i + ') span');
                     // if header name denotes an id column, parses values as integers
-                    if (headerName.includes("id")) {
+                    if (headerName.indexOf("id") > -1) {
                         aValue = parseInt(aValue);
                         bValue = parseInt(bValue);
                     }
                     // if header name denotes an amount column, parses values as floats
-                    else if (headerName.includes("amount")) {
+                    else if (headerName.indexOf("amount") > -1) {
                         aValue = parseFloat(aValue);
                         bValue = parseFloat(bValue);
                     }
                     // if header name denotes a date column, parses values as dates
-                    else if (headerName.includes("date") || headerName === "birthday") {
+                    else if (headerName.indexOf("date") > -1 || headerName === "birthday") {
                         // stripping time here since time doesn't come into play in test data
                         let aIndexOfSpace = aValue.indexOf(" ");
                         if (aIndexOfSpace > -1) aValue = aValue.slice(0, aIndexOfSpace + 1);
@@ -796,7 +1002,7 @@
             // gets product rows where transaction id matches one of the required ids
             let productRows = $("table.products tbody tr").filter(function () {
                 let productTransactionId = getAndTrimHtmlOfChildElement(this, ".transactionId");
-                return transactionIds.includes(productTransactionId);
+                return transactionIds.indexOf(productTransactionId) > -1;
             });
             return transactionRows.add(productRows).add(buyerAndSellerRows);
         };
@@ -927,14 +1133,13 @@
             let etarget = $(e.target);
             // unhighlights when anything except:
             // thead
-            // tbody button, tbody input
+            // tbody button, tbody input, tbody select
             // tfoot
             // is clicked
             let needToUnhighlight =
                 !(etarget.closest(dataTablesSelector).length > 0
                 && (etarget.closest("thead").length > 0
-                || etarget.closest("tbody button").length > 0
-                || etarget.closest("tbody input").length > 0
+                || etarget.closest("tbody button, tbody input, tbody select").length > 0
                 || etarget.closest("tfoot").length > 0));
             // need to highlight if clicking a data table row
             // that currently is not a highlight base.
@@ -942,8 +1147,7 @@
             let needToHighlight =
                 etarget.closest(dataTablesSelector).length > 0
                 && etarget.closest("tbody").length > 0
-                && !etarget.closest("tbody button").length > 0
-                && !etarget.closest("tbody input").length > 0
+                && !etarget.closest("tbody button, tbody input, tbody select").length > 0
                 && !etarget.closest("tr").is(".highlight-base");
             if (needToUnhighlight) {
                 unhighlightAllRows();
